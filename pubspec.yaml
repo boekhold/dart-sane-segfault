@@ -1,0 +1,11 @@
+name: sane
+description: A library to access the SANE native library
+version: 1.0.0
+
+publish_to: none
+
+environment:
+  sdk: '>=2.14.4 <3.0.0'
+
+dependencies:
+  ffi: ^1.1.2
