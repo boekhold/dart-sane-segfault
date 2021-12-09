@@ -1,5 +1,7 @@
 # Overview
 
+Also see https://groups.google.com/a/dartlang.org/g/misc/c/-w0zIbk8YhM
+
 This repository contains a test of FFI bindings to the SANE library that causes a
 SEGFAULT on exit of the `main` function. The Dart code attempts to replicate
 the functionality of the included C program `listdevices.c`
