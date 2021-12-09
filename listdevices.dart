@@ -22,16 +22,27 @@ class SANE_Device extends Struct {
 }
 
 void main() {
-  // Boiler-plate for the bindings
-  late DynamicLibrary sane;
-  sane = DynamicLibrary.open('libsane.so');
+  final dlopen = DynamicLibrary.process().lookupFunction<
+      Pointer<Void> Function(Pointer<Utf8>, Int32),
+      Pointer<Void> Function(Pointer<Utf8>, int)>('dlopen');
+  final dlsym = DynamicLibrary.process().lookupFunction<
+      Pointer<Void> Function(Pointer<Void>, Pointer<Utf8>),
+      Pointer<Void> Function(Pointer<Void>, Pointer<Utf8>)>('dlsym');
 
-  sane_init =
-      sane.lookup<NativeFunction<sane_init_native_t>>('sane_init').asFunction();
-  sane_exit =
-      sane.lookup<NativeFunction<sane_exit_native_t>>('sane_exit').asFunction();
-  sane_get_devices = sane
-      .lookup<NativeFunction<sane_get_devices_native_t>>('sane_get_devices')
+  const RTLD_LAZY = 0x00001;
+  final libsane = dlopen(
+    "libsane.so".toNativeUtf8(), // note: toNativeUtf8 leaks memory
+    RTLD_LAZY,
+  );
+
+  sane_init = dlsym(libsane, 'sane_init'.toNativeUtf8())
+      .cast<NativeFunction<sane_init_native_t>>()
+      .asFunction();
+  sane_exit = dlsym(libsane, 'sane_exit'.toNativeUtf8())
+      .cast<NativeFunction<sane_exit_native_t>>()
+      .asFunction();
+  sane_get_devices = dlsym(libsane, 'sane_get_devices'.toNativeUtf8())
+      .cast<NativeFunction<sane_get_devices_native_t>>()
       .asFunction();
 
   // Test code, error handling omitted
